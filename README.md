@@ -51,7 +51,12 @@ Connect IQ apps can't inject waypoints into the watch's native saved-locations l
 
 ### Windows
 
-1. The SDK Manager installs SDKs under `%APPDATA%\Garmin\ConnectIQ\Sdks\`. Add the current SDK's `bin` folder to your `PATH` (Settings → "Edit environment variables for your account"), or `cd` into it and call the tools directly. The CLI tools are batch files on Windows: `monkeyc.bat`, `connectiq.bat`, `monkeydo.bat`.
+1. The SDK Manager installs SDKs under `%APPDATA%\Garmin\ConnectIQ\Sdks\`. The CLI tools are batch files on Windows (`monkeyc.bat`, `connectiq.bat`, `monkeydo.bat`) and are **not on your `PATH` by default** — running `monkeyc.bat` straight away gives "not recognized". Add the SDK's `bin` folder to the current PowerShell session with:
+   ```powershell
+   $sdk = (Get-ChildItem "$env:APPDATA\Garmin\ConnectIQ\Sdks" -Directory | Sort-Object Name -Descending | Select-Object -First 1).FullName
+   $env:Path += ";$sdk\bin"
+   ```
+   To make it permanent, add that `...\Sdks\<sdk-folder>\bin` path via Start menu → "Edit environment variables for your account" → `Path`. If `Get-ChildItem` finds nothing, the SDK isn't installed yet — open the SDK Manager and download it first. `monkeyc` also needs Java on the `PATH`; install a JRE/JDK (e.g. Temurin 17) if `java` isn't recognized.
 2. Generate a developer key if you don't have one — easiest via VS Code: `Ctrl+Shift+P` → **Monkey C: Generate a Developer Key**. Alternatively, use OpenSSL from **Git Bash** (bundled with Git for Windows):
    ```sh
    openssl genrsa -out developer_key.pem 4096
