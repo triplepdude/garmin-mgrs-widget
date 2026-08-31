@@ -71,8 +71,8 @@ After sideloading, the widget appears in the glance loop (UP/DOWN from the watch
 
 ## Notes & limitations
 
-- MGRS output uses Garmin's built-in geoid conversion (`Position.toGeoString(GEO_MGRS)`), WGS84, 1 m precision.
-- MGRS is undefined near the poles (beyond 84°N / 80°S); the widget shows `- - -` there.
+- MGRS output uses Garmin's built-in conversion (`Position.toGeoString(GEO_MGRS)`), WGS84, 1 m precision.
+- Poleward of UTM coverage (beyond 84°N / 80°S), references are computed on the Universal Polar Stereographic (UPS) grid using the standard MGRS polar scheme — grid zones Y/Z (north) and A/B (south) — and are marked with a `(UPS)` suffix, e.g. `Z AH 00000 00000 (UPS)` at the North Pole. Verified against the NGA GEOTRANS-based `mgrs` reference library.
 - Requires Connect IQ API level 3.2.0+ (the Forerunner 255 ships well above this).
 
 ## Project layout
