@@ -42,7 +42,7 @@ class MgrsMainView extends WatchUi.View {
         }
     }
 
-    function onPosition(info) {
+    function onPosition(info as Position.Info) as Void {
         if (info.position != null) {
             setLocation(info.position);
         }
