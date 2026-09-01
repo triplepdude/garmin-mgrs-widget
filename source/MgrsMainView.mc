@@ -112,6 +112,21 @@ class MgrsMainView extends WatchUi.View {
         return true;
     }
 
+    // A grid entered by hand on the entry screen: store it like a
+    // START-save and jump to its page (newest waypoint = page 1).
+    function addManualWaypoint(mgrs, lat, lon) {
+        var name = MgrsStore.nextName();
+        MgrsStore.add(name, mgrs, lat, lon, Time.now().value());
+        var msg = exportToDevice(name, lat, lon)
+            ? "Saved " + name + " +Nav" : "Saved " + name;
+        flashText = msg;
+        if (WatchUi has :showToast) {
+            WatchUi.showToast(msg, null);
+        }
+        pageIndex = 1;
+        WatchUi.requestUpdate();
+    }
+
     // Copy a waypoint into the device's native Saved Locations so the
     // Navigation activity can use it directly (Navigate > Saved).
     function exportToDevice(name, lat, lon) {
@@ -203,7 +218,7 @@ class MgrsMainView extends WatchUi.View {
             dc.setColor(Graphics.COLOR_GREEN, Graphics.COLOR_TRANSPARENT);
             footer = flashText;
         } else {
-            footer = "START: save";
+            footer = "START: save  MENU: enter";
         }
         dc.drawText(cx, (h * 76) / 100, Graphics.FONT_XTINY, footer,
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);

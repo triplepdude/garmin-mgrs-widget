@@ -10,6 +10,7 @@ The Forerunner 255 has no native MGRS position format; this widget fills that ga
 - **Live MGRS position** — open the widget and it acquires GPS (or instantly reuses the fix from a running activity) and displays the full MGRS grid (e.g. `32T MK 12345 67890`), plus decimal lat/lon and fix quality.
 - **One-press save** — press **START** to save the current position. Waypoints are auto-named `WPT 1`, `WPT 2`, … and stored with MGRS, lat/lon, and timestamp (up to 50, oldest dropped first).
 - **Native navigation integration** — every save is also written to the watch's own **Saved Locations** (under the same `WPT n` name), so you can navigate straight to it: START → (activity) → hold UP → **Navigation** → **Saved** — no manual coordinate entry.
+- **Manual grid entry** — hold **UP** (MENU) on the live page to type in an MGRS grid received over the radio or read off a map. The form is pre-filled with your current grid (a received grid is usually nearby, so most of the prefix is already right); step through zone, band, square letters, and digits with UP/DOWN/START. The entered grid is converted to lat/lon on the watch, saved as a waypoint, and pushed to the native Saved Locations — so you can navigate to a radioed grid in seconds.
 - **Browse and delete** — press **DOWN/UP** to page through saved waypoints (newest first); hold **UP** (MENU) on a waypoint to delete it, with confirmation.
 - **Navigation-activity friendly** — the widget only *reads* position. If a Run/Hike/Navigation activity is in progress, the widget seeds itself from that activity's GPS fix, so the grid you see matches the activity exactly, and opening the widget never disturbs the recording.
 
@@ -19,7 +20,7 @@ The Forerunner 255 has no native MGRS position format; this widget fills that ga
 |---|---|---|
 | START (upper right) | Save current position (also added to native Saved Locations) | Re-send this waypoint to native Saved Locations |
 | UP / DOWN | Page through saved waypoints | Page through saved waypoints |
-| Hold UP (MENU) | — | Delete this waypoint |
+| Hold UP (MENU) | Enter an MGRS grid manually | Delete this waypoint |
 | BACK (lower right) | Exit widget | Exit widget |
 
 ## Using saved grids with navigation
@@ -29,6 +30,17 @@ Saving a waypoint in the widget also saves it to the watch's native **Saved Loca
 1. Press **START** in the widget to save the current position as `WPT n`.
 2. To navigate to it: START → (activity) → hold UP → **Navigation** → **Saved** → pick `WPT n`.
 3. Or radio/report the MGRS grid directly — that's usually the point of MGRS.
+
+### Entering a grid by hand
+
+Hold **UP** (MENU) on the live page to open the entry form. It shows a full grid (e.g. `32T MK 12345 67890`) with the active field highlighted:
+
+- **UP / DOWN** — change the active field (zone number 1–60, band letter, 100 km square letters, or a digit). The square-column letter cycles through only the letters valid for the chosen zone.
+- **START** — move to the next field; on the last digit it accepts the grid.
+- **Hold UP (MENU)** — accept the grid immediately (handy when the prefill already matches most of it).
+- **BACK** — move to the previous field; from the first field it leaves the form.
+
+For a shorter grid (e.g. a 6-digit `123 456`), enter it with trailing zeros: `12300 45600` — that's the standard south-west corner of the cell. Entry covers the UTM bands (80°S–84°N); polar `(UPS)` grids can be displayed but not entered. An impossible square/band combination is rejected as `Invalid grid`. Accepted grids are converted to lat/lon on the watch (within centimeters of the reference geotrans implementation), saved as a normal waypoint, and pushed to the native Saved Locations.
 
 For a waypoint saved before this feature existed (or one you deleted from the watch's Saved Locations), page to it in the widget and press **START** to re-send it. Deleting a waypoint in the widget does not remove it from the watch's Saved Locations — Connect IQ apps can only add there, so remove it on the watch (Navigation → Saved → the location → delete) if you no longer want it.
 

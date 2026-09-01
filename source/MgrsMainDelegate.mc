@@ -29,11 +29,15 @@ class MgrsMainDelegate extends WatchUi.BehaviorDelegate {
         return true;
     }
 
-    // MENU (hold UP): delete the saved waypoint on the current page.
+    // MENU (hold UP): enter a grid manually on the live page, or
+    // delete the saved waypoint on the current page.
     function onMenu() {
         var idx = view.storeIndexForPage();
         if (idx < 0) {
-            return false;
+            var entry = new MgrsEntryView(view);
+            WatchUi.pushView(entry, new MgrsEntryDelegate(entry),
+                WatchUi.SLIDE_IMMEDIATE);
+            return true;
         }
         var list = MgrsStore.load();
         if (idx >= list.size()) {
