@@ -10,12 +10,13 @@ class MgrsMainDelegate extends WatchUi.BehaviorDelegate {
         view = mainView;
     }
 
-    // START/SELECT: save the current position (live page only).
+    // START/SELECT: save the current position on the live page, or
+    // re-send the shown waypoint to the native Saved Locations.
     function onSelect() {
         if (view.pageIndex == 0) {
             return view.saveCurrent();
         }
-        return false;
+        return view.exportCurrentPage();
     }
 
     function onNextPage() {

@@ -1,6 +1,7 @@
 import Toybox.Activity;
 import Toybox.Graphics;
 import Toybox.Lang;
+import Toybox.PersistedContent;
 import Toybox.Position;
 import Toybox.Time;
 import Toybox.WatchUi;
@@ -101,9 +102,52 @@ class MgrsMainView extends WatchUi.View {
         }
         var name = MgrsStore.nextName();
         MgrsStore.add(name, currentMgrs, currentLat, currentLon, Time.now().value());
-        flashText = "Saved " + name;
+        var msg = exportToDevice(name, currentLat, currentLon)
+            ? "Saved " + name + " +Nav" : "Saved " + name;
+        flashText = msg;
         if (WatchUi has :showToast) {
-            WatchUi.showToast("Saved " + name, null);
+            WatchUi.showToast(msg, null);
+        }
+        WatchUi.requestUpdate();
+        return true;
+    }
+
+    // Copy a waypoint into the device's native Saved Locations so the
+    // Navigation activity can use it directly (Navigate > Saved).
+    function exportToDevice(name, lat, lon) {
+        if (lat == null || lon == null
+            || !(Toybox has :PersistedContent)
+            || !(PersistedContent has :saveWaypoint)) {
+            return false;
+        }
+        try {
+            var loc = new Position.Location({
+                :latitude => lat,
+                :longitude => lon,
+                :format => :degrees
+            });
+            PersistedContent.saveWaypoint(loc, { :name => name });
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    // START on a saved waypoint page: re-send that waypoint to the
+    // native Saved Locations (covers waypoints saved before this
+    // feature existed, or ones deleted from the watch side).
+    function exportCurrentPage() {
+        var idx = storeIndexForPage();
+        var list = MgrsStore.load();
+        if (idx < 0 || idx >= list.size()) {
+            return false;
+        }
+        var entry = list[idx];
+        var msg = exportToDevice(entry["name"], entry["lat"], entry["lon"])
+            ? entry["name"] + " -> Nav" : "Nav save failed";
+        flashText = msg;
+        if (WatchUi has :showToast) {
+            WatchUi.showToast(msg, null);
         }
         WatchUi.requestUpdate();
         return true;
@@ -196,8 +240,15 @@ class MgrsMainView extends WatchUi.View {
         dc.drawText(cx, (h * 74) / 100, Graphics.FONT_XTINY,
             MgrsFormat.timestampString(entry["ts"]),
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-        dc.drawText(cx, (h * 88) / 100, Graphics.FONT_XTINY,
-            "" + pageIndex + "/" + (pageCount() - 1) + "  MENU: delete",
+        var footer;
+        if (flashText != null) {
+            dc.setColor(Graphics.COLOR_GREEN, Graphics.COLOR_TRANSPARENT);
+            footer = flashText;
+        } else {
+            footer = "" + pageIndex + "/" + (pageCount() - 1)
+                + "  START: nav  MENU: del";
+        }
+        dc.drawText(cx, (h * 88) / 100, Graphics.FONT_XTINY, footer,
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 }
